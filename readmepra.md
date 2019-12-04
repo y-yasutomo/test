@@ -12,7 +12,7 @@ library(malia) #呼び出し
 ## マニュアル
 - 追加予定
 
-## 参考資料
+## 参考文献
 ライントランセクト法
-> Buckland, S.T. et al. (2015) Distance sampling: Methods and applications. Springer International Publishing, Switzerland. 
+> Buckland, S.T. et al. (2015) Distance sampling: Methods and applications. Springer International Publishing, Switzerland.  
 > Buckland, S.T. et al. (2001) Introduction to Distance Sampling. Oxford University Press, Oxford, United Kingdom. 
