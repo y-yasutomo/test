@@ -11,6 +11,7 @@ while(!(Min%in%c(0,15,30,45))){
 }
 
 stTime<-paste(Hour,Min,sep=":")
+if(Min==0)stTime<-paste0(stTime,"0")
 DateMat<-read.csv("C:/Users/sskai/Desktop/temp/format.csv")
 
 DateMat$Date<-as.character(DateMat$Date)
