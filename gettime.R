@@ -13,6 +13,7 @@ DateMat$sTime<-as.character(DateMat$sTime)
 DateMat$eTime<-as.character(DateMat$eTime)
 
 if(DateMat$eTime[nrow(DateMat)]==""){
+  if(Min%in%c(0,15,30,45))Min<-Min+1
   while(!(Min%in%c(0,15,30,45))){
     Min<-Min-1 
   }
@@ -20,6 +21,7 @@ if(DateMat$eTime[nrow(DateMat)]==""){
   if(Min==0)stTime<-paste0(stTime,"0")
   DateMat$eTime[length(DateMat$eTime)]<-as.character(stTime)
 }else{
+  if(Min%in%c(0,15,30,45))Min<-Min+1
   while(!(Min%in%c(0,15,30,45))){
     Min<-Min+1 
   }
