@@ -1,0 +1,158 @@
+---
+title: "離反対象の選別"
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    fig_caption: yes
+    highlight: tango
+    number_sections: yes
+    theme: paper
+    toc: yes
+    toc_float: no
+  word_document:
+    toc: yes
+---
+```{r initKnitr, echo=F}
+library(knitr)
+library(rmarkdown)
+
+## Global options
+options(max.print="90")
+opts_chunk$set(echo =TRUE,
+               eval=TRUE,
+               cache=!TRUE,
+               cache.path="cache/",
+               prompt=FALSE,
+               tidy=FALSE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE,
+               results= 'markup',
+               fig.margin=TRUE, 
+               fig.height=5, 
+               fig.width=8
+)
+
+```
+
+```{r}
+library(tidyverse)
+```
+
+
+# 店舗ごと購入金額
+ 購入金額：項目[]の単純合計
+
+```{r}
+Data <- read_csv("sum_amount_all.csv")
+temp<-substr(as.character(Data$DEAL_YMD),1,7)
+Data$YR_MONTH <- factor(temp,
+                        levels = unique(temp))
+Data<-Data %>% group_by(.,STORENAME,YR_MONTH) %>% 
+  summarise(ALL_SUM_SALES_AMOUNT=sum(SUM_SALSE))
+
+Data %>% ggplot() +
+  geom_line(aes(x=YR_MONTH, y=ALL_SUM_SALES_AMOUNT,group=STORENAME,
+                col=STORENAME),size=1.2) +
+  geom_point(aes(x=YR_MONTH, y=ALL_SUM_SALES_AMOUNT,group=STORENAME,
+                 col=STORENAME),size=2) +
+theme(axis.text.x = element_text(angle = 90,vjust = 0.5),
+      axis.title.x = element_blank()) + ylab("購入金額") + ggtitle("店舗ごと購入金額")+
+  facet_wrap(~STORENAME)
+```
+
+## 店舗ごと会員購入金額
+
+```{r}
+#member
+Data <- read_csv("sales_amount.csv")
+temp<-substr(as.character(Data$DEAL_YMD),1,7)
+Data$YR_MONTH <- factor(temp,
+                        levels = unique(temp))
+
+Data<-Data %>% group_by(.,STORENAME,YR_MONTH) %>% 
+  summarise(NON_MEMBER_SUM_SALES_AMOUNT=sum(SUM_SALSE))
+
+Data %>% ggplot() +
+  geom_line(aes(x=YR_MONTH, y=NON_MEMBER_SUM_SALES_AMOUNT,group=STORENAME,
+                col=STORENAME),size=1.2) +
+  geom_point(aes(x=YR_MONTH, y=NON_MEMBER_SUM_SALES_AMOUNT,group=STORENAME,
+                 col=STORENAME),size=2) +
+  theme(axis.text.x = element_text(angle = 90,vjust = 0.5),
+        axis.title.x = element_blank()) + ylab("購入金額") + ggtitle("店舗ごと会員購入金額") +
+  facet_wrap(~STORENAME)
+```
+
+## 店舗ごと非会員購入金額
+
+```{r}
+#non member
+Data <- read_csv("nonmember_sum_amount.csv")
+temp<-substr(as.character(Data$DEAL_YMD),1,7)
+Data$YR_MONTH <- factor(temp,
+                        levels = unique(temp))
+
+Data<-Data %>% group_by(.,STORENAME,YR_MONTH) %>% 
+  summarise(NON_MEMBER_SUM_SALES_AMOUNT=sum(SUM_SALSE))
+
+Data %>% ggplot() +
+  geom_line(aes(x=YR_MONTH, y=NON_MEMBER_SUM_SALES_AMOUNT,group=STORENAME,
+                col=STORENAME),size=1.2) +
+  geom_point(aes(x=YR_MONTH, y=NON_MEMBER_SUM_SALES_AMOUNT,group=STORENAME,
+                 col=STORENAME),size=2) +
+  theme(axis.text.x = element_text(angle = 90,vjust = 0.5),
+        axis.title.x = element_blank()) + ylab("購入金額") + ggtitle("店舗ごと非会員購入金額") +
+  facet_wrap(~STORENAME)
+
+```
+
+### 昨対比で購入金額の減少が顕著な2店舗を抽出
+　アイランドシティ店：福岡県　コロナ感染者の多い地域  
+　出雲白枝店：島根県　コロナ感染者の少ない地域  
+　会員の購買金額は昨年並みか微増なため，この2店舗の非会員から離反の傾向をつかみたい
+
+```{r}
+Data %>% filter(.,STORENAME%in%c("アイランドシティ店","出雲白枝店")) %>% 
+  ggplot() +
+  geom_line(aes(x=YR_MONTH, y=NON_MEMBER_SUM_SALES_AMOUNT,group=STORENAME,
+                col=STORENAME),size=1.2) +
+  geom_point(aes(x=YR_MONTH, y=NON_MEMBER_SUM_SALES_AMOUNT,group=STORENAME,
+                 col=STORENAME),size=2) +
+  theme(axis.text.x = element_text(angle =90,vjust = 0.5))
+```
+
+# コロナ感染者数の確認
+ コロナ感染者数が原因の可能性もあるためプロット（会員の金額が増えているため関係ないと想定のもとで)  
+ 情報元:https://www3.nhk.or.jp/news/special/coronavirus/data/  
+ 下図はスケールが異なるので注意
+```{r}
+#covid
+covid<-read_csv("../covid_cases/nhk_news_covid19_prefectures_daily_data.csv") %>% 
+  select(.,1:4)
+
+colnames(covid)<-c("Date","preCode","prefecture","incidents")
+
+temp<-covid %>% filter(.,prefecture%in%c("島根県","福岡県"))
+temp$yrmonth<-sapply(strsplit(temp$Date,"/"),function(x)paste(x[[1]],x[[2]],sep="-"))
+temp$yrmonth<-factor(temp$yrmonth,levels = c(paste0("2020-",1:12),"2021-1"))
+
+temp2 <- temp %>% group_by(yrmonth,prefecture) %>% 
+  summarise(SUM = sum(incidents))
+  
+temp2 %>% 
+  filter(.,!yrmonth%in%c("2020-8","2020-9","2020-9","2020-10","2020-11","2020-12","2021-1")) %>% 
+  ggplot() +
+  geom_line(aes(x=yrmonth, y=SUM,group=prefecture),size=1.2) +
+  geom_point(aes(x=yrmonth, y=SUM,group=prefecture),size=2) + 
+  facet_wrap(~prefecture,scales = "free") +
+  ylab("感染者数") + xlab("年月")
+
+```
+ 
+
+
+
+
+
+
