@@ -1,0 +1,145 @@
+/****** Script for SelectTopNRows command from SSMS  ****
+SELECT TOP (1000) [temp_no]
+      ,[class_no]
+      ,[name]
+      ,[family_name]
+      ,[given_name]
+      ,[reading]
+      ,[year]
+      ,[class]
+      ,[japanese]
+      ,[math]
+      ,[science]
+      ,[society]
+      ,[english]
+      ,[sum]
+      ,[ave]
+  FROM [kensyu].[dbo].[practice]
+  */
+
+  SELECT *
+  FROM [select]
+  ;
+
+
+  --Q1
+  SELECT *
+  FROM [kensyu].[dbo].[practice]
+  ORDER BY [class] 
+  ;
+
+  --Q2
+  SELECT COUNT(*)
+  FROM [kensyu].[dbo].[practice]
+  ;
+  
+  --Q3
+  SELECT [class]
+		,COUNT(*) AS class_cnt
+  FROM [kensyu].[dbo].[practice]
+  GROUP BY [class]
+  ;
+
+  --Q4
+  SELECT [class]
+		,AVG([japanese]) AS ave_japanese
+		,ROUND(AVG([japanese]),1) AS round_ave
+  FROM [kensyu].[dbo].[practice]
+  GROUP BY [class]
+  ;
+
+  --DROP TABLE temp ;
+
+  CREATE TABLE temp (
+    FLoat_val    FLOAT,
+	Decimal_val    DECIMAL(10,3)
+   );
+  -- INSERT INTO temp VALUES(3630,3630,3630);
+	INSERT INTO temp VALUES(1.005,1.005);
+   
+   SELECT *
+   FROM temp ;
+     
+   SELECT Float_val
+		 ,ROUND(FLoat_val,2) AS Float_round
+		 ,FLOOR(FLoat_val*1000+0.5)/1000
+		 ,Decimal_val
+		 ,ROUND(Decimal_val,2) AS Decimal_round
+   FROM temp ;
+  
+  /*
+   SELECT TOP(1)
+   		  Fval/1000 AS rdval
+		  ,Dval/1000 AS ddval
+		  ,Ival/1000 AS idval
+		  ,round(Fval/1000,2,1) AS rval
+		  ,round(Dval/1000,2,1) AS dval
+		  ,round(Ival/1000,2,1) AS ival
+   FROM temp ;
+
+  --SELECT round(1.0*3630/1000,2)::FLOAT;　
+  --https://teratail.com/questions/115327
+  --http://ichy.seesaa.net/article/2842259.html
+  
+  --https://stackoverflow.com/questions/8222307/why-c-sharp-round-and-sql-round-functions-yields-different-outputs
+
+  select round(cast(123.4654 as float),2) ;
+  select floor(((123.4674+0.05)*10))/10 ;
+  SELECT ROUND(6.925e0, 2) 
+
+  SELECT round(6.545e0,2);
+  SELECT round(7.5e0,0);
+
+  
+DECLARE @flt_val float ;
+--SET @flt_val = 54.55 ;
+--(SET @flt_val = 54.54)
+--SET @flt_val = 1.005 ;
+SET @flt_val = 1.005 ;
+select round(@flt_val,2);
+
+DECLARE @de_val DECIMAL ;
+SET @de_val = 1.005 ;
+select round(@de_val,3);
+
+--四捨五入したい位で、5を足す
+SET @flt_val = @flt_val + 0.05
+
+--整数部分で切り捨てるにはfloor関数がお勧め
+SELECT floor( @flt_val * 10 ) / 10 AS [FLOOR]
+*/
+
+
+DECLARE @flt_val float ;
+SET @flt_val = 54.55 ;
+SET @flt_val = 54.54 ;
+
+--１．四捨五入したい位が１の位になるよう、（10のn乗）をかける。
+SET @flt_val = @flt_val*10
+
+--２．1の値に0.5を足す
+SET @flt_val = @flt_val+0.5
+
+--３．小数点以下を切り捨てる（Int関数など）
+SET @flt_val = FLOOR(@flt_val)
+
+--４．3の値に１で使った数字の逆数をかける。（桁数を元に戻す）
+SELECT @flt_val / 10
+
+  --Q5
+  SELECT [class]
+		,SUM([japanese]) AS sum_japanese
+  FROM [kensyu].[dbo].[practice]
+  GROUP BY [class]
+  ;
+
+  --Q6
+  SELECT TOP(1) [name]
+		,[sum] 
+  FROM [kensyu].[dbo].[practice]
+  WHERE [class]=1
+  ORDER BY [sum] DESC
+  ;
+
+
+
