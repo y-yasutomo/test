@@ -1,0 +1,129 @@
+--Q07
+
+SELECT MAX  ([temp_no]) AS "項番_最大値"
+      ,MIN  ([temp_no]) AS "項番_最小値"
+	  ,((COUNT(*)-COUNT([temp_no]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([class_no])  AS "出席番号_最大値"
+　　　,MIN  ([class_no])  AS "出席番号_最小値"
+      ,((COUNT(*)-COUNT([class_no]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice] 
+
+SELECT MAX  ([name])  AS "氏名_最大値"
+　　　,MIN  ([name])  AS "氏名_最小値"
+      ,((COUNT(*)-COUNT([name]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([family_name])  AS "姓_最大値"
+　　　,MIN  ([family_name])  AS "姓_最小値"
+      ,((COUNT(*)-COUNT([family_name]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([given_name])  AS "名_最大値"
+　　　,MIN  ([given_name])  AS "名_最小値"
+      ,((COUNT(*)-COUNT([given_name]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([reading])  AS "よみがな_最大値"
+　　　,MIN  ([reading])  AS "よみがな_最小値"
+      ,((COUNT(*)-COUNT([reading]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([year])  AS "学年_最大値"
+　　　,MIN  ([year])  AS "学年_最小値"
+      ,((COUNT(*)-COUNT([year]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([class])  AS "組_最大値"
+　　　,MIN  ([class])  AS "組_最小値"
+      ,((COUNT(*)-COUNT([class]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([japanese])  AS "国語の得点_最大値"
+　　　,MIN  ([japanese])  AS "国語の得点_最小値"
+      ,((COUNT(*)-COUNT([japanese]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([math])  AS "数学の得点_最大値"
+　　　,MIN  ([math])  AS "数学の得点_最小値"
+      ,((COUNT(*)-COUNT([math]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([science])  AS "理科の得点_最大値"
+　　　,MIN  ([science])  AS "理科の得点_最小値"
+      ,((COUNT(*)-COUNT([science]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([society])  AS "社会の得点_最大値"
+　　　,MIN  ([society])  AS "社会の得点_最小値"
+      ,((COUNT(*)-COUNT([society]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([english])  AS "英語の得点_最大値"
+　　　,MIN  ([english])  AS "英語の得点_最小値"
+      ,((COUNT(*)-COUNT([english]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([sum])  AS "5教科合計_最大値"
+　　　,MIN  ([sum])  AS "5教科合計_最小値"
+      ,((COUNT(*)-COUNT([sum]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+SELECT MAX  ([ave])  AS "5教科平均_最大値"
+　　　,MIN  ([ave])  AS "5教科平均_最小値"
+      ,((COUNT(*)-COUNT([ave]))*100) / (SELECT COUNT (*) FROM [kitabayashi].[dbo].[practice]) AS "充足率"
+ FROM  [kitabayashi].[dbo].[practice]
+
+  --Q08
+
+SELECT [class]
+      , ROUND(AVG ([sum]),1) AS class_ave
+ FROM  [kitabayashi].[dbo].[practice]
+GROUP BY [class]
+ORDER BY class_ave DESC
+
+  --Q09
+
+SELECT TOP 5 [name]
+      ,[math]
+ FROM  [kitabayashi].[dbo].[practice]
+WHERE  [class] = 3
+ORDER BY 
+       [math] DESC
+
+  --Q10
+
+SELECT [name]
+      ,[math]+[science] AS r_score
+  FROM  [kitabayashi].[dbo].[practice]
+WHERE [math]+[science] >= 160
+ORDER BY r_score DESC
+
+  --Q11
+
+SELECT *
+	  ,CASE 
+	    WHEN [sum] >= 370 THEN '☆'
+		ELSE NULL
+	  END star
+  FROM [kitabayashi].[dbo].[practice]
+
+  --Q12
+
+SELECT [temp_no]
+      ,ROW_NUMBER() OVER (PARTITION BY [class] ORDER BY [reading] ) [class_no]
+	  ,[name]
+	  ,[family_name]
+	  ,[given_name]
+	  ,[reading]
+	  ,[class]
+	  ,[japanese]
+      ,[math]
+      ,[science]
+      ,[society]
+      ,[english]
+      ,[sum]
+      ,[ave]
+ FROM [kitabayashi].[dbo].[practice] 
+
