@@ -1,0 +1,37 @@
+--13
+
+
+--14
+SELECT [name],[japanese],[math],[science],[society],[english]
+FROM [kamei].[dbo].[practice]
+WHERE [japanese] >= (SELECT AVG(japanese) FROM [kamei].[dbo].[practice])
+AND
+[math] >= (SELECT AVG(math) FROM [kamei].[dbo].[practice])
+AND
+[science] >= (SELECT AVG(science) FROM [kamei].[dbo].[practice])
+AND
+[society] >= (SELECT AVG(society) FROM [kamei].[dbo].[practice])
+AND
+[english] >= (SELECT AVG(english) FROM [kamei].[dbo].[practice])
+;
+
+--15
+SELECT TOP(1)
+[name]
+,ABS(([japanese]+[english]+[society])/3-([math]+[science])/2)
+AS[rb_dif]
+,ROUND(CAST([japanese]+[english]+[society] AS real)/3,2)
+AS[b_avg]
+,ROUND(CAST([math]+[science] AS real)/2,2)
+AS[r_avg]
+FROM [kamei].[dbo].[practice]
+ORDER BY [rb_dif] desc
+;
+
+---16
+SELECT [name],[class],[english]
+FROM [kamei].[dbo].[practice] t1
+WHERE [english] = (SELECT MAX(english) FROM [kamei].[dbo].[practice]
+WHERE class =t1.class)
+ORDER BY [class]
+;
