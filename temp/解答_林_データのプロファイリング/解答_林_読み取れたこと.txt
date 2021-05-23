@@ -1,0 +1,10 @@
+気づいたこと
+
+・NULLがあるのは、[Make],[Model],[Fuel Type],[Hybrid Type],[PlugIn],[Sales Volume]
+・ブランク or スペースがあるのは[Make],[Model],[Fuel Type]
+・[Make]と[Model]のNULLは１つで同じレコード
+・上のこのレコードは[Car Explantion]と[Sales Volume]しか入力していない。そのうち[Sales Volume]は最大値が入力されている
+・[Car Explantion]はすべてユニーク値
+・[Hybrid Type]はNULLが7割を占める
+・[PlugIn]はユニーク値が not available と standardの2種のみ
+・[Sales Volume]は数値。マイナス値がある
