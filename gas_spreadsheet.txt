@@ -1,0 +1,85 @@
+function writeGmailToSpreadSheet() {
+  var sheet = SpreadsheetApp.getActiveSheet() ; 
+  let days = GenerateDate(); 
+  let lastRow = sheet.getLastRow() + 1 ;
+  sheet.getRange(lastRow,2).setValue(days);
+
+  let Search_Quaery = createQuery();
+  var threads = GmailApp.search(Search_Quaery);
+  //var row = 2; // 1行目はヘッダ
+
+  for(var n in threads){
+    var thread = threads[n];   
+    var msgs = thread.getMessages();
+    for(m in msgs){
+      var msg = msgs[m];
+      let body = msg.getBody();
+      if (body.match(/start/) || body.match(/end/)){
+        var date = msg.getDate();
+        let strall = "JST - "+Utilities.formatDate(date, "JST", "yyyy/MM/dd (E) HH:mm:ss Z");
+        let strdate = Utilities.formatDate(date, "JST", "yyyy/MM/dd");
+        //let strtime = Utilities.formatDate(date, "JST", "HH:mm");
+        let strhour = Utilities.formatDate(date, "JST", "HH");
+        let strmin = Utilities.formatDate(date, "JST", "mm");
+        let formatMin = String(settime(strmin));
+        let minPadding = ('00000000' + formatMin).slice(-2);
+
+        let target = strhour + ":" +  minPadding ;
+        Logger.log(target);
+
+        if(body.match(/start/)){
+          sheet.getRange(lastRow,1).setValue(strall);
+          sheet.getRange(lastRow,3).setValue(strdate);
+          //sheet.getRange(lastRow,3).setValue(strtime);
+          sheet.getRange(lastRow,4).setValue(target);
+          sheet.getRange(lastRow,6).setValue(body);
+        }else{
+          sheet.getRange(lastRow,2).setValue(strall);
+          //sheet.getRange(lastRow,6).setValue(strdate);
+          //sheet.getRange(lastRow,8).setValue(strtime);
+          sheet.getRange(lastRow,5).setValue(target);
+          sheet.getRange(lastRow,7).setValue(body);
+        }
+        //row++;
+      }else{
+        continue ;
+      }
+    }
+  }
+}
+
+
+function createQuery(){
+  let date = new Date() ;
+  let month = String(date.getMonth()+1) ;
+  let query = "newer:" + date.getFullYear() + "/" + month + "/" + date.getDate() + " in:chat";
+  return query ;
+}
+
+function GenerateDate(){
+  let date = new Date() ;
+  let month = String(date.getMonth()+1) ;
+  month = ('00' + month).slice(-2);
+  let days = date.getFullYear() + "/" + month + "/" + date.getDate() ;
+  return days ;
+}
+
+function settime(z){
+ let let1 = (z % 15 == z);
+ let let2 = (z % 30 == z);
+ let let3 = (z % 45 == z);
+ let let4 = (z % 60 == z);
+ let idx = let1 + let2 + let3 + let4 ;
+
+if(idx==4){
+ ans = 0
+}else if(idx==3){
+ ans = 15 
+}else if(idx==2){
+ ans = 30
+}else if(idx==1){
+ ans = 45
+}
+return ans
+}
+
